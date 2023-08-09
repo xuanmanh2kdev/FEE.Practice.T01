@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shopping List</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body class="m-3">
+    <table class="table table-hover table-bordered">
+      <thead>
+        <tr>
+          <th scope="col">Product</th>
+          <th scope="col">Description</th>
+          <th scope="col">Quantity/Update</th>
+          <th scope="col">Price</th>
+          <th scope="col">Discount</th>
+          <th scope="col">Tax</th>
+          <th scope="col">Total</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+      <tfoot></tfoot>
+    </table>
+
+    <script>
+      const listItems = [
+        {
+          images: "./image/camera.jpg",
+          description: "MASSA AST Color: black, Material: metal 1",
+          quantity: 5,
+          price: 120.0,
+          discount: 25.0,
+        },
+        {
+          images: "./image/sandisk.jpg",
+          description: "MASSA AST Color: black, Material: metal 2",
+          quantity: 3,
+          price: 7.0,
+          discount: 0.0,
+        },
+        {
+          images: "/image/camera2.jpg",
+          description: "MASSA AST Color: black, Material: metal 3",
+          quantity: 2,
+          price: 120.0,
+          discount: 25.0,
+        },
+      ];
+
+      const tbody = document.querySelector("tbody");
+      function render() {
+        // body
+        let totalFinal = 0.0;
+        let totalDiscount = 0.0;
+        let totalTax = 0.0;
+        let tblBody = "";
+        listItems.forEach((item) => {
+          totalFinal += Number(
+            (
+              item.quantity * (item.price - item.discount) +
+              item.quantity * item.price * 0.125
+            ).toFixed(2)
+          );
+
+          totalDiscount += Number((item.discount * item.quantity).toFixed(2));
+
+          totalTax += Number((item.quantity * item.price * 0.125).toFixed(2));
+
+          tblBody += `
+                    <tr>
+                        <td>${item.images}</td>
+                        <td class="description">${item.description}</td>
+                        <td class="text-center">${
+                          item.quantity
+                        }<button class="btn-minus rounded w-25 font-weight-bold">-</button> <button class="btn-add rounded w-25 font-weight-bold">+</button> <button class="btn-remove bg-danger text-white">X</button> </td>
+                        <td>${
+                          "$" +
+                          (item.price * item.quantity).toFixed(2).toString()
+                        }</td>
+                        <td>${
+                          "$" +
+                          (item.discount * item.quantity).toFixed(2).toString()
+                        }</td>
+                        <td>${
+                          "$" +
+                          (item.quantity * item.price * 0.125)
+                            .toFixed(2)
+                            .toString()
+                        }</td>
+                        <td>${
+                          "$" +
+                          (
+                            item.price * item.quantity -
+                            item.quantity * item.discount +
+                            item.quantity * item.price * 0.125
+                          )
+                            .toFixed(2)
+                            .toString()
+                        }</td>
+                    </tr>
+                    `;
+        });
+        tbody.innerHTML = tblBody;
+
+        // display the total amount to the last row of the table
+        const tfoot = document.querySelector("tfoot");
+        tfoot.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="text-right">Total Price</td>
+                            <td>$${totalFinal}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" class="text-right">Total Discount</td>
+                            <td>$${totalDiscount}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" class="text-right">Total Tax</td>
+                            <td>$${totalTax}</td>
+                        </tr>
+                    `;
+      }
+
+      render();
+
+      tbody.addEventListener("click", (e) => {
+        // log the target of td with class name "item-name" of the click event
+        let target = e.target;
+        if (target.matches(".btn-minus")) {
+          let item = target
+            .closest("tr")
+            .querySelector(".description").textContent;
+          let findItem = listItems.find((i) => i.description === item);
+          findItem.quantity = findItem.quantity > 0 ? findItem.quantity - 1 : 0;
+        } else if (target.matches(".btn-add")) {
+          let item = target
+            .closest("tr")
+            .querySelector(".description").textContent;
+          let findItem = listItems.find((i) => i.description === item);
+          findItem.quantity += 1;
+        } else if (target.matches(".btn-remove")) {
+          let item = target
+            .closest("tr")
+            .querySelector(".description").textContent;
+          let findItem = listItems.find((i) => i.description === item);
+          listItems.splice(listItems.indexOf(findItem), 1);
+        }
+        render();
+      });
+    </script>
+  </body>
+</html>
